@@ -1,28 +1,21 @@
-
-
-// bluetoothScan.ts
+// bluetoothManager.ts
+import { BleManager } from 'react-native-ble-plx';
 import { useState, useEffect } from 'react';
+import { Buffer } from 'buffer';
 import { Platform, PermissionsAndroid, Alert } from 'react-native';
-import { Buffer } from 'buffer'; // For decoding base64 data
-import { BleManager } from "react-native-ble-plx";
 
-
-// Replace with your actual manager import
 const manager = new BleManager();
 
-const useBluetoothScan = () => {
-  const [message, setMessage] = useState("Press scan to start...");
-  const [scanning, setScanning] = useState(false);
-  const [temperature, setTemperature] = useState<string | null>(null);
-  const [humidity, setHumidity] = useState<string | null>(null);
+export const bluetoothManager = {
+  message: "Press scan to start...",
+  scanning: false,
+  temperature: null as string | null,
+  humidity: null as string | null,
+  startScan: async function() {
+    if (this.scanning) return;
+    this.scanning = true;
+    this.message = "Scanning for ESP32_Sensor...";
 
-  useEffect(() => {
-    return () => {
-      manager.destroy();
-    };
-  }, []);
-
-  const requestPermissions = async () => {
     if (Platform.OS === "android") {
       if (Platform.Version >= 31) {
         await PermissionsAndroid.requestMultiple([
@@ -31,29 +24,19 @@ const useBluetoothScan = () => {
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         ]);
       } else {
-        await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-        );
+        await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
       }
     }
-  };
-
-  const startScan = async () => {
-    await requestPermissions();
-    setScanning(true);
-    setMessage("Scanning for ESP32_Sensor...");
 
     manager.startDeviceScan(null, null, async (error, device) => {
       if (error) {
         Alert.alert("Scan Error", error.message);
-        setScanning(false);
+        this.scanning = false;
         return;
       }
 
-      if (device?.name) console.log("Found:", device.name);
-
       if (device?.name === "ESP32_Sensor") {
-        setMessage(`Found device: ${device.name}`);
+        this.message = `Found device: ${device.name}`;
         manager.stopDeviceScan();
 
         try {
@@ -67,15 +50,15 @@ const useBluetoothScan = () => {
               if (c.isNotifiable) {
                 c.monitor((err, characteristic) => {
                   if (err) {
-                    setMessage(`Error: ${err.message}`);
+                    this.message = `Error: ${err.message}`;
                     return;
                   }
                   if (characteristic?.value) {
                     const decoded = Buffer.from(characteristic.value, "base64").toString("utf8");
                     const match = decoded.match(/TEMP:(\d+\.\d+),HUM:(\d+\.\d+)/);
                     if (match) {
-                      setTemperature(match[1]);
-                      setHumidity(match[2]);
+                      this.temperature = match[1];
+                      this.humidity = match[2];
                     }
                   }
                 });
@@ -84,27 +67,17 @@ const useBluetoothScan = () => {
             }
           }
         } catch (err: any) {
-          setMessage(`Connection error: ${err.message}`);
+          this.message = `Connection error: ${err.message}`;
         } finally {
-          setScanning(false);
+          this.scanning = false;
         }
       }
     });
 
     setTimeout(() => {
       manager.stopDeviceScan();
-      setScanning(false);
-      setMessage("Scan stopped.");
+      this.scanning = false;
+      this.message = "Scan stopped.";
     }, 10000);
-  };
-
-  return {
-    message,
-    temperature,
-    humidity,
-    scanning,
-    startScan,
-  };
+  }
 };
-
-export default useBluetoothScan;

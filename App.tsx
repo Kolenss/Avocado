@@ -20,10 +20,8 @@
   import InfoModal from 'components/InformationalModal';
   import { BleManager } from "react-native-ble-plx";
   import { Buffer } from "buffer";
-  import useBluetoothScan from 'routes/bluetoothScan';
-
-
-
+  import { bluetoothManager } from 'routes/bluetoothScan';
+  
   const manager = new BleManager();
 
   function HomeScreen(){
@@ -31,7 +29,7 @@
   const [modal, setModal] = useState(false);
   const [tab, setTab] = useState("Default");
 
-  const { message, startScan, humidity, temperature, scanning } = useBluetoothScan();
+  const { message, startScan, humidity, temperature, scanning } = bluetoothManager;
 
     return(
       <>
@@ -219,7 +217,7 @@
    
     const [activeTab, setActiveTab] = useState('Home');
     const insets = useSafeAreaInsets();
-    const { message, scanning, temperature, humidity, startScan } = useBluetoothScan();
+    const { message, scanning, temperature, humidity, startScan } = bluetoothManager;
 
     return (
       <View
