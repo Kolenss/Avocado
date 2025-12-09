@@ -1,0 +1,12 @@
+[
+    {
+        "terms": "By installing and using the Avocado App, you agree to comply with these Terms and Conditions. The app is intended solely for personal and informational use. The developers make no warranties regarding the accuracy or reliability of the displayed data. We are not liable for any loss, damage, or misuse arising from the use of this application. Continued use constitutes your acceptance of these terms."
+    },
+    {
+        "privacy": "Avocado App values and protects your privacy. The app does not collect, store, or transmit any personal or identifying information. All sensor data and analytics remain within your device unless explicitly shared by you. We are committed to ensuring that your data is handled responsibly and used only for its intended purpose — monitoring and visualization."
+    },
+    {
+        "about": "Avocado is a smart monitoring application designed to visualize environmental sensor data such as gas, humidity, and temperature in real time. It aims to help users easily understand and analyze sensor readings through clear visual charts and insights. Developed with simplicity and efficiency in mind, Avocado delivers an intuitive experience for both data monitoring and environmental awareness."
+    }
+
+]
