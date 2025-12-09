@@ -31,7 +31,7 @@
   const [modal, setModal] = useState(false);
   const [tab, setTab] = useState("Default");
 
-  
+  const { message, startScan, humidity, temperature, scanning } = useBluetoothScan();
 
     return(
       <>
@@ -56,6 +56,7 @@
             </View>
             </Pressable>
 
+            {/* Connect to Bluetooth button */}
             <Pressable className='' onPress={ startScan } disabled={scanning}>
               <View className=' items-center justify-center gap-[5px] h-[60px]'>
               <Text className='border px-[55px] p-[10px] rounded-[10px] bg-lightgreenbg text-darkgreentext border-darkgreentext'>{ message }</Text>

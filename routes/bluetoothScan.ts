@@ -11,8 +11,6 @@ import { BleManager } from "react-native-ble-plx";
 const manager = new BleManager();
 
 const useBluetoothScan = () => {
-  const [modal, setModal] = useState(false);
-  const [tab, setTab] = useState("Default");
   const [message, setMessage] = useState("Press scan to start...");
   const [scanning, setScanning] = useState(false);
   const [temperature, setTemperature] = useState<string | null>(null);
@@ -74,8 +72,6 @@ const useBluetoothScan = () => {
                   }
                   if (characteristic?.value) {
                     const decoded = Buffer.from(characteristic.value, "base64").toString("utf8");
-                    setMessage(decoded);
-
                     const match = decoded.match(/TEMP:(\d+\.\d+),HUM:(\d+\.\d+)/);
                     if (match) {
                       setTemperature(match[1]);
@@ -103,10 +99,6 @@ const useBluetoothScan = () => {
   };
 
   return {
-    modal,
-    setModal,
-    tab,
-    setTab,
     message,
     temperature,
     humidity,
