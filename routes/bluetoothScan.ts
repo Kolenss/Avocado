@@ -1,21 +1,38 @@
 // bluetoothManager.ts
-import { BleManager } from 'react-native-ble-plx';
-import { useState, useEffect } from 'react';
-import { Buffer } from 'buffer';
-import { Platform, PermissionsAndroid, Alert } from 'react-native';
+import { create } from 'zustand';
+import { BleManager } from "react-native-ble-plx";
+import { Buffer } from "buffer";
+import { PermissionsAndroid, Platform } from "react-native";
+import { template } from '@babel/core';
 
-const manager = new BleManager();
+const ble = new BleManager();
 
-export const bluetoothManager = {
+type BluetoothStore = {
+  message: string;
+  scanning: boolean;
+  temperature: string | null;
+  humidity: string | null;
+  pressure: string | null;
+  gasResistance: string | null;
+
+  startScan: () => Promise<void>;
+};
+
+export const useBluetooth = create<BluetoothStore>((set, get) => ({
   message: "Press scan to start...",
   scanning: false,
-  temperature: null as string | null,
-  humidity: null as string | null,
-  startScan: async function() {
-    if (this.scanning) return;
-    this.scanning = true;
-    this.message = "Scanning for ESP32_Sensor...";
+  temperature: null,
+  humidity: null,
+  pressure: null,
+  gasResistance: null,
 
+  startScan: async () => {
+    const scanning = get().scanning;
+    if (scanning) return;
+
+    set({ scanning: true, message: "Scanning..." });
+
+    // Android permissions
     if (Platform.OS === "android") {
       if (Platform.Version >= 31) {
         await PermissionsAndroid.requestMultiple([
@@ -24,60 +41,81 @@ export const bluetoothManager = {
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         ]);
       } else {
-        await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+        await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+        );
       }
     }
 
-    manager.startDeviceScan(null, null, async (error, device) => {
+    // Start scanning
+    ble.startDeviceScan(null, null, async (error, device) => {
       if (error) {
-        Alert.alert("Scan Error", error.message);
-        this.scanning = false;
+        set({ message: error.message, scanning: false });
         return;
       }
 
       if (device?.name === "ESP32_Sensor") {
-        this.message = `Found device: ${device.name}`;
-        manager.stopDeviceScan();
+        ble.stopDeviceScan();
+        set({ message: "Connecting..." });
 
-        try {
-          const connectedDevice = await device.connect();
-          await connectedDevice.discoverAllServicesAndCharacteristics();
+        const connected = await device.connect();
 
-          const services = await connectedDevice.services();
-          for (const service of services) {
-            const characteristics = await service.characteristics();
-            for (const c of characteristics) {
-              if (c.isNotifiable) {
-                c.monitor((err, characteristic) => {
-                  if (err) {
-                    this.message = `Error: ${err.message}`;
-                    return;
+        // Request bigger MTU so full message can fit
+        await connected.requestMTU(128);
+
+        await connected.discoverAllServicesAndCharacteristics();
+
+        const services = await connected.services();
+
+        for (const service of services) {
+          const chars = await service.characteristics();
+
+          for (const c of chars) {
+            if (c.isNotifiable) {
+              // Start monitoring notifications
+              c.monitor((err, characteristic) => {
+                if (err) {
+                  set({ message: `Error: ${err.message}` });
+                  return;
+                }
+
+                if (characteristic?.value) {
+                  const decoded = Buffer.from(characteristic.value, "base64")
+                    .toString("utf8")
+                    .trim()
+                    .replace(/\0/g, "");
+
+                  console.log("RAW BASE64:", characteristic.value);
+                  console.log("DECODED:", decoded);
+
+                  // Match TEMP, HUM, PRES, GAS
+                  const match = decoded.match(
+                    /TEMP:([\d.]+),HUM:([\d.]+),PRES:([\d.]+),GAS:([\d.]+)/
+                  );
+
+                  if (match) {
+                    set({
+                      temperature: match[1],
+                      humidity: match[2],
+                      pressure: match[3],
+                      gasResistance: match[4],
+                    });
                   }
-                  if (characteristic?.value) {
-                    const decoded = Buffer.from(characteristic.value, "base64").toString("utf8");
-                    const match = decoded.match(/TEMP:(\d+\.\d+),HUM:(\d+\.\d+)/);
-                    if (match) {
-                      this.temperature = match[1];
-                      this.humidity = match[2];
-                    }
-                  }
-                });
-                return;
-              }
+                }
+              });
             }
           }
-        } catch (err: any) {
-          this.message = `Connection error: ${err.message}`;
-        } finally {
-          this.scanning = false;
         }
+
+        // Mark connected after starting monitor
+        set({ message: "Connected!", scanning: false });
       }
     });
 
+    // Stop scanning after 10 seconds (safety)
     setTimeout(() => {
-      manager.stopDeviceScan();
-      this.scanning = false;
-      this.message = "Scan stopped.";
+      ble.stopDeviceScan();
+      set({ scanning: false, message: "Scan stopped." });
     }, 10000);
-  }
-};
+  },
+}));
