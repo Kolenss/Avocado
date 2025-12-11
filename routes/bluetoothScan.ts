@@ -1,30 +1,38 @@
-
-
-// bluetoothScan.ts
-import { useState, useEffect } from 'react';
-import { Platform, PermissionsAndroid, Alert } from 'react-native';
-import { Buffer } from 'buffer'; // For decoding base64 data
+// bluetoothManager.ts
+import { create } from 'zustand';
 import { BleManager } from "react-native-ble-plx";
+import { Buffer } from "buffer";
+import { PermissionsAndroid, Platform } from "react-native";
+import { template } from '@babel/core';
 
+const ble = new BleManager();
 
-// Replace with your actual manager import
-const manager = new BleManager();
+type BluetoothStore = {
+  message: string;
+  scanning: boolean;
+  temperature: string | null;
+  humidity: string | null;
+  pressure: string | null;
+  gasResistance: string | null;
 
-const useBluetoothScan = () => {
-  const [modal, setModal] = useState(false);
-  const [tab, setTab] = useState("Default");
-  const [message, setMessage] = useState("Press scan to start...");
-  const [scanning, setScanning] = useState(false);
-  const [temperature, setTemperature] = useState<string | null>(null);
-  const [humidity, setHumidity] = useState<string | null>(null);
+  startScan: () => Promise<void>;
+};
 
-  useEffect(() => {
-    return () => {
-      manager.destroy();
-    };
-  }, []);
+export const useBluetooth = create<BluetoothStore>((set, get) => ({
+  message: "Press scan to start...",
+  scanning: false,
+  temperature: null,
+  humidity: null,
+  pressure: null,
+  gasResistance: null,
 
-  const requestPermissions = async () => {
+  startScan: async () => {
+    const scanning = get().scanning;
+    if (scanning) return;
+
+    set({ scanning: true, message: "Scanning..." });
+
+    // Android permissions
     if (Platform.OS === "android") {
       if (Platform.Version >= 31) {
         await PermissionsAndroid.requestMultiple([
@@ -38,81 +46,76 @@ const useBluetoothScan = () => {
         );
       }
     }
-  };
 
-  const startScan = async () => {
-    await requestPermissions();
-    setScanning(true);
-    setMessage("Scanning for ESP32_Sensor...");
-
-    manager.startDeviceScan(null, null, async (error, device) => {
+    // Start scanning
+    ble.startDeviceScan(null, null, async (error, device) => {
       if (error) {
-        Alert.alert("Scan Error", error.message);
-        setScanning(false);
+        set({ message: error.message, scanning: false });
         return;
       }
 
-      if (device?.name) console.log("Found:", device.name);
-
       if (device?.name === "ESP32_Sensor") {
-        setMessage(`Found device: ${device.name}`);
-        manager.stopDeviceScan();
+        ble.stopDeviceScan();
+        set({ message: "Connecting..." });
 
-        try {
-          const connectedDevice = await device.connect();
-          await connectedDevice.discoverAllServicesAndCharacteristics();
+        const connected = await device.connect();
 
-          const services = await connectedDevice.services();
-          for (const service of services) {
-            const characteristics = await service.characteristics();
-            for (const c of characteristics) {
-              if (c.isNotifiable) {
-                c.monitor((err, characteristic) => {
-                  if (err) {
-                    setMessage(`Error: ${err.message}`);
-                    return;
+        // Request bigger MTU so full message can fit
+        await connected.requestMTU(128);
+
+        await connected.discoverAllServicesAndCharacteristics();
+
+        const services = await connected.services();
+
+        for (const service of services) {
+          const chars = await service.characteristics();
+
+          for (const c of chars) {
+            if (c.isNotifiable) {
+              // Start monitoring notifications
+              c.monitor((err, characteristic) => {
+                if (err) {
+                  set({ message: `Error: ${err.message}` });
+                  return;
+                }
+
+                if (characteristic?.value) {
+                  const decoded = Buffer.from(characteristic.value, "base64")
+                    .toString("utf8")
+                    .trim()
+                    .replace(/\0/g, "");
+
+                  console.log("RAW BASE64:", characteristic.value);
+                  console.log("DECODED:", decoded);
+
+                  // Match TEMP, HUM, PRES, GAS
+                  const match = decoded.match(
+                    /TEMP:([\d.]+),HUM:([\d.]+),PRES:([\d.]+),GAS:([\d.]+)/
+                  );
+
+                  if (match) {
+                    set({
+                      temperature: match[1],
+                      humidity: match[2],
+                      pressure: match[3],
+                      gasResistance: match[4],
+                    });
                   }
-                  if (characteristic?.value) {
-                    const decoded = Buffer.from(characteristic.value, "base64").toString("utf8");
-                    setMessage(decoded);
-
-                    const match = decoded.match(/TEMP:(\d+\.\d+),HUM:(\d+\.\d+)/);
-                    if (match) {
-                      setTemperature(match[1]);
-                      setHumidity(match[2]);
-                    }
-                  }
-                });
-                return;
-              }
+                }
+              });
             }
           }
-        } catch (err: any) {
-          setMessage(`Connection error: ${err.message}`);
-        } finally {
-          setScanning(false);
         }
+
+        // Mark connected after starting monitor
+        set({ message: "Connected!", scanning: false });
       }
     });
 
+    // Stop scanning after 10 seconds (safety)
     setTimeout(() => {
-      manager.stopDeviceScan();
-      setScanning(false);
-      setMessage("Scan stopped.");
+      ble.stopDeviceScan();
+      set({ scanning: false, message: "Scan stopped." });
     }, 10000);
-  };
-
-  return {
-    modal,
-    setModal,
-    tab,
-    setTab,
-    message,
-    temperature,
-    humidity,
-    scanning,
-    startScan,
-  };
-};
-
-export default useBluetoothScan;
+  },
+}));
