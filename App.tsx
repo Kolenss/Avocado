@@ -20,10 +20,8 @@
   import InfoModal from 'components/InformationalModal';
   import { BleManager } from "react-native-ble-plx";
   import { Buffer } from "buffer";
-  import useBluetoothScan from 'routes/bluetoothScan';
-
-
-
+  import { useBluetooth } from 'routes/bluetoothScan';
+  
   const manager = new BleManager();
 
   function HomeScreen(){
@@ -31,7 +29,7 @@
   const [modal, setModal] = useState(false);
   const [tab, setTab] = useState("Default");
 
-  
+  const { message, startScan, humidity, temperature, scanning, pressure, gasResistance } = useBluetooth();
 
     return(
       <>
@@ -42,10 +40,10 @@
           <View className=' h-[290px] p-[5px]'>
             <Text className='text-darkgreentext text-[20px] h-[50px] justify-center p-[5px]'>Standard Readings</Text>
             <View className='flex flex-1 items-center justify-between shadow-lg'>
-              <ReadingCard title='Gas' logo={ <MaterialCommunityIcons name="fire" size={24} color="black"/> } progressNum={0.623} setTab={ setTab }/>
-              <ReadingCard title='Humidity' logo={ <Entypo name="water" size={24} color="black"/> } progressNum={ humidity } setTab={ setTab }/>
-              <ReadingCard title='Temperature' logo={ <FontAwesome6 name="temperature-half" size={24} color="black"/> } progressNum={ temperature } setTab={ setTab }/>
-              <ReadingCard title='Carbon Dioxide' logo={ <Entypo name="air" size={24} color="black" /> } progressNum={0.241} setTab={ setTab }/>
+              <ReadingCard title='Gas' logo={ <MaterialCommunityIcons name="fire" size={24} color="black"/> } progressNum={ gasResistance ? Number(gasResistance) / 100 : 0 } setTab={ setTab }/>
+              <ReadingCard title='Humidity' logo={ <Entypo name="water" size={24} color="black"/> } progressNum={ humidity ? Number(humidity) / 100 : 0 } setTab={ setTab }/>
+              <ReadingCard title='Temperature' logo={ <FontAwesome6 name="temperature-half" size={24} color="black"/> } progressNum={ temperature ? Number(temperature) / 100 : 0 } setTab={ setTab }/>
+              <ReadingCard title='Carbon Dioxide' logo={ <Entypo name="air" size={24} color="black" /> } progressNum={ pressure ? Number(pressure) / 100 : 0 } setTab={ setTab }/>
             </View>
           </View>
           <View className=' flex-1 justify-center'>
@@ -56,7 +54,8 @@
             </View>
             </Pressable>
 
-            <Pressable className='' onPress={ startScan } disabled={scanning}>
+            {/* Connect to Bluetooth button */}
+            <Pressable className='' onPress={ startScan } >
               <View className=' items-center justify-center gap-[5px] h-[60px]'>
               <Text className='border px-[55px] p-[10px] rounded-[10px] bg-lightgreenbg text-darkgreentext border-darkgreentext'>{ message }</Text>
             </View>
@@ -106,7 +105,7 @@
       <Modal transparent={true} animationType='fade'>
         <BlurView className='flex-1' intensity={ 360 } tint='extraLight'>
           <View className=' flex-1 justify-center items-center'>
-            <CardModal logo={ <MaterialCommunityIcons name="fire" size={24} color="black"/> } Title={`Gas`} sensorModel={`BME680`} currentReading={`VOC Index: 192`} setTab={ setTab }/>
+            <CardModal logo={ <MaterialCommunityIcons name="fire" size={24} color="black"/> } Title={`Gas`} sensorModel={`BME680`} currentReading={`VOC Index: ${ gasResistance }`} setTab={ setTab }/>
           </View>
         </BlurView>
       </Modal>
@@ -115,7 +114,7 @@
       <Modal transparent={true} animationType='fade'>
         <BlurView className='flex-1' intensity={ 360 } tint='extraLight'>
           <View className=' flex-1 justify-center items-center'>
-            <CardModal Title={`Humidity`} sensorModel={`SHT31`} currentReading={`Humidity: 61.8`} setTab={ setTab } logo={ <Entypo name="water" size={24} color="black"/> }/>
+            <CardModal Title={`Humidity`} sensorModel={`SHT31`} currentReading={`Humidity: ${ humidity }`} setTab={ setTab } logo={ <Entypo name="water" size={24} color="black"/> }/>
           </View>
         </BlurView>
       </Modal>
@@ -124,7 +123,7 @@
       <Modal transparent={true} animationType='fade'>
         <BlurView className='flex-1' intensity={ 360 } tint='extraLight'>
           <View className=' flex-1 justify-center items-center'>
-            <CardModal logo={ <FontAwesome6 name="temperature-half" size={24} color="black"/> } Title={`Temperature`} sensorModel={`SHT31`} currentReading={`Temperature: 27.2`} setTab={ setTab } />
+            <CardModal logo={ <FontAwesome6 name="temperature-half" size={24} color="black"/> } Title={`Temperature`} sensorModel={`SHT31`} currentReading={`Temperature: ${ temperature }`} setTab={ setTab } />
           </View>
         </BlurView>
       </Modal>
@@ -133,7 +132,7 @@
       <Modal transparent={true} animationType='fade'>
         <BlurView className='flex-1' intensity={ 360 } tint='extraLight'>
           <View className=' flex-1 justify-center items-center'>
-            <CardModal logo={ <Entypo name="air" size={24} color="black" /> } Title={`Carbon Dioxide`} sensorModel={`NDIR CO₂`} currentReading={`Carbon Dioxide: 752`} setTab={ setTab }/>
+            <CardModal logo={ <Entypo name="air" size={24} color="black" /> } Title={`Carbon Dioxide`} sensorModel={`NDIR CO₂`} currentReading={`Carbon Dioxide: ${ pressure }`} setTab={ setTab }/>
           </View>
         </BlurView>
       </Modal>
@@ -144,8 +143,6 @@
   }
 
   function Statistics(){
-
-    const data=[ {value:600}, {value:200}, {value:290}, {value:500}, {value: 500}, {value: 100}, {value: 400} , {value: 100} , {value: 400} , {value: 300}  ]
 
     return(
     <>
@@ -218,7 +215,7 @@
    
     const [activeTab, setActiveTab] = useState('Home');
     const insets = useSafeAreaInsets();
-    const { message, scanning, temperature, humidity, startScan } = useBluetoothScan();
+    // const { message, scanning, temperature, humidity, startScan } = useBluetooth();
 
     return (
       <View
