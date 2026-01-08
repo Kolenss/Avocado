@@ -11,8 +11,8 @@ export default function ProgressBar({ progress }: Progress) {
     <View className="items-center">
       <Progress.Bar
         progress={ progress }
-        width={180}
-        height={23}
+        width={240}
+        height={27} 
         color="#64A12D"  
         unfilledColor="#E5E7EB" 
         borderWidth={0}
