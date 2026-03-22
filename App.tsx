@@ -1,55 +1,16 @@
   import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
   import { Text, View, Pressable, Modal, Alert, PermissionsAndroid, Platform, ImageBackground, Dimensions } from 'react-native';
-  import ReadingCard from 'components/ReadingCard'
-  import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-  import Entypo from '@expo/vector-icons/Entypo';
-  import FontAwesome6 from '@expo/vector-icons/FontAwesome6'; 
-  import TriviaBoard from 'components/TriviaBoard';
   import Greeting from 'components/Greetings';
   import CustomTabs from 'components/Navigation';
-  import ReadNow from 'components/ReadNow';
   import './global.css';
   import { useState, useEffect } from 'react';
-  import SettingsScreen from 'components/Settings';
   import StatisticScreen from 'components/Statistics';
   import { CheckedProvider, useChecked } from 'components/CheckedContext';
-  import { BlurView } from "expo-blur";
-  import CardModal from 'components/CardModal';
-  import Informational from 'components/Informational';
-  import infoData from './assets/Informational.json';
-  import InfoModal from 'components/InformationalModal';
   import { BleManager } from "react-native-ble-plx";
   import Home from 'components/HomeScreen';
-  import { Buffer } from "buffer";
-  import { useBluetooth } from 'routes/bluetoothScan';
   import Privacy from 'components/SettingsScreen';
   
   const manager = new BleManager();
-
-  function HomeScreen(){
-    return(
-      <>
-      <Home/>
-      </>
-    );
-  }
-
-  function Statistics(){
-
-    return(
-    <>
-      <StatisticScreen />
-    </>
-    );
-  }
-
-  function Settings(){
-    return(
-    <>
-      <Privacy/>
-    </>
-    );
-  }
 
   function Screen(){
    
@@ -78,9 +39,9 @@
               </View>
           </View>
           <View className=' flex-1 items-center'>
-            { activeTab == "Statistics" && <Statistics/>}
-            { activeTab == "Home" && <HomeScreen/>}
-            { activeTab == "Settings" && <Settings />}
+            { activeTab == "Statistics" && <StatisticScreen />}
+            { activeTab == "Home" && <Home/>}
+            { activeTab == "Settings" && <Privacy/>}
           </View>
           </ImageBackground>
       

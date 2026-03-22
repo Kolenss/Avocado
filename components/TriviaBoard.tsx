@@ -14,7 +14,7 @@ export default function TriviaBoard(){
 
     return(
         <>
-            <View className="h-[191px] w-[332px] flex flex-row justify-center items-center rounded-[40px]">
+            <View className=" h-[191px] w-[332px] flex flex-row justify-center items-center rounded-[40px]">
                 <ImageBackground source={require('../assets/Trivia_Background.png')} resizeMode="contain" className=" flex flex-row h-[191px] w-[332px] rounded-[50px]">
                     <View className=" w-1/2 h-full flex flex-col">
                         <View className="h-1/5 justify-center items-center">

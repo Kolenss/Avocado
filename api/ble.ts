@@ -4,7 +4,7 @@ import { PermissionsAndroid, Platform } from 'react-native';
 const manager = new BleManager();
 
 export async function requestPermission(){
-    if (Platform.OS == 'android' && Platform.Version >= 23) {
+    if (Platform.OS === 'android' && Platform.Version >= 23) {
         await PermissionsAndroid.requestMultiple([
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
             PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,

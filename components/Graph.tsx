@@ -57,6 +57,8 @@ export default function Statschart({ className, data, data2 }: StatsChartProps) 
         showValuesAsDataPointsText
         showTextOnFocus
         showStripOnFocus
+        width={ 350 }
+        
       />
     </View>
   );
