@@ -1,0 +1,118 @@
+// Pure JS Random Forest inference — exact same results as predict_cli.py
+// No native modules, no network, fully offline.
+
+const RIPENESS_MAP: Record<number, string> = {
+  0: 'Unripe',
+  1: 'Near Ripe',
+  2: 'Ripe',
+  3: 'Very Ripe',
+  4: 'Overripe',
+  5: 'Molds',
+  6: 'Rotten',
+};
+
+export type PredictionResult = {
+  shelf_life_hours: number;
+  shelf_life_days: number;
+  ripeness_label: string;
+  ripeness_class: number;
+  note: string;
+};
+
+export const defaultPrediction: PredictionResult = {
+  shelf_life_hours: 0,
+  shelf_life_days: 0,
+  ripeness_label: '—',
+  ripeness_class: -1,
+  note: 'Connect sensor to get prediction.',
+};
+
+// Node format: [feature, threshold, left, right] for internal, [value] for leaf
+type RegNode = [number, number, number, number] | [number];
+type ClsNode = [number, number, number, number] | [number];
+
+let regTrees: RegNode[][] | null = null;
+let clsTrees: ClsNode[][] | null = null;
+let clsClasses: number[] | null = null;
+
+function loadModels() {
+  if (!regTrees) {
+    regTrees = require('../assets/reg_trees_compact.json') as RegNode[][];
+  }
+  if (!clsTrees) {
+    const clsData = require('../assets/cls_trees_compact.json') as { t: ClsNode[][]; c: number[] };
+    clsTrees = clsData.t;
+    clsClasses = clsData.c;
+  }
+}
+
+function predictReg(features: number[]): number {
+  let sum = 0;
+  for (const tree of regTrees!) {
+    let node = 0;
+    while (tree[node].length === 4) {
+      const [feat, thr, left, right] = tree[node] as [number, number, number, number];
+      node = features[feat] <= thr ? left : right;
+    }
+    sum += (tree[node] as [number])[0];
+  }
+  return sum / regTrees!.length;
+}
+
+function predictCls(features: number[]): number {
+  const votes: Record<number, number> = {};
+  for (const tree of clsTrees!) {
+    let node = 0;
+    while (tree[node].length === 4) {
+      const [feat, thr, left, right] = tree[node] as [number, number, number, number];
+      node = features[feat] <= thr ? left : right;
+    }
+    const cls = (tree[node] as [number])[0];
+    votes[cls] = (votes[cls] ?? 0) + 1;
+  }
+  // Return class with most votes, mapped through clsClasses
+  const winnerIdx = Number(Object.entries(votes).sort((a, b) => b[1] - a[1])[0][0]);
+  return clsClasses![winnerIdx] ?? winnerIdx;
+}
+
+export async function fetchPrediction(
+  temperature: string,
+  humidity: string,
+  pressure: string,
+  gasResistance: string,
+  co2: string
+): Promise<PredictionResult> {
+  loadModels();
+
+  const features = [
+    parseFloat(temperature),
+    parseFloat(humidity),
+    parseFloat(pressure),
+    parseFloat(gasResistance),
+    parseFloat(co2),
+  ];
+
+  const shelf_life_hours = Math.max(0, predictReg(features));
+  const shelf_life_days = shelf_life_hours / 24;
+  const ripeness_class = predictCls(features);
+  const ripeness_label = RIPENESS_MAP[ripeness_class] ?? 'Unknown';
+
+  let note: string;
+  if (shelf_life_days <= 0) {
+    note = 'Consume immediately or discard.';
+  } else if (shelf_life_days < 1) {
+    note = `Will last about ${Math.round(shelf_life_hours)} more hours.`;
+  } else if (shelf_life_days < 2) {
+    note = 'Will be at peak ripeness within 1 day.';
+  } else {
+    note = `Estimated ${shelf_life_days.toFixed(1)} days of shelf life remaining.`;
+  }
+
+  return {
+    shelf_life_hours: Math.round(shelf_life_hours * 10) / 10,
+    shelf_life_days: Math.round(shelf_life_days * 100) / 100,
+    ripeness_label,
+    ripeness_class,
+    note,
+  };
+}
