@@ -92,10 +92,13 @@ export async function fetchPrediction(
     parseFloat(co2),
   ];
 
-  const shelf_life_hours = Math.max(0, predictReg(features));
-  const shelf_life_days = shelf_life_hours / 24;
   const ripeness_class = predictCls(features);
   const ripeness_label = RIPENESS_MAP[ripeness_class] ?? 'Unknown';
+
+  // Clamp shelf life based on ripeness: overripe/molds/rotten = 0 remaining
+  const rawHours = predictReg(features);
+  const shelf_life_hours = ripeness_class >= 4 ? 0 : Math.max(0, rawHours);
+  const shelf_life_days = shelf_life_hours / 24;
 
   let note: string;
   if (shelf_life_days <= 0) {
