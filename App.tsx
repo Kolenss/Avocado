@@ -6,6 +6,7 @@ import './global.css';
 import { useState } from 'react';
 import StatisticScreen from 'components/Statistics';
 import { CheckedProvider } from 'components/CheckedContext';
+import { StatisticsProvider } from 'components/StatisticsContext';
 import Home from 'components/HomeScreen';
 import Privacy from 'components/SettingsScreen';
 
@@ -45,7 +46,9 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <CheckedProvider>
-        <Screen />
+        <StatisticsProvider>
+          <Screen />
+        </StatisticsProvider>
       </CheckedProvider>
     </SafeAreaProvider>
   );

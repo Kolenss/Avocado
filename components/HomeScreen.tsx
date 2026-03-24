@@ -47,8 +47,8 @@ export default function Home(){
             <View className='flex items-center justify-between'>
               <ReadingCard title='Temperature' logo={ TempLogo } progressNum={ temperature ? Number(temperature) / 100 : 0 } setTab={ setTab }/>
               <ReadingCard title='Humidity' logo={ HumidityLogo } progressNum={ humidity ? Number(humidity) / 100 : 0 } setTab={ setTab }/>
-              <ReadingCard title='Pressure' logo={ GasLogo } progressNum={ pressure ? Number(pressure) / 1500 : 0 } setTab={ setTab }/>
-              <ReadingCard title='Gas' logo={ GasLogo } progressNum={ gasResistance ? Number(gasResistance) / 1000 : 0 } setTab={ setTab }/>
+              <ReadingCard title='Pressure' logo={ GasLogo } progressNum={ pressure ? Number(pressure) / 1200 : 0 } setTab={ setTab }/>
+              <ReadingCard title='Gas' logo={ GasLogo } progressNum={ gasResistance ? Number(gasResistance) / 100 : 0 } setTab={ setTab }/>
               <ReadingCard title='Carbon Dioxide' logo={ CarbonLogo } progressNum={ co2 ? Number(co2) / 100 : 0 } setTab={ setTab }/>
             </View>
           </View>
