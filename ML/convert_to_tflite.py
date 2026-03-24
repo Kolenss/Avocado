@@ -26,7 +26,7 @@ TFLITE_REG_PATH = "avocado_shelf_life.tflite"
 HEADER_PATH     = "avocado_ripeness_model_data.h"
 CSV_PATH        = "data-set-avocado-open-box-only.csv"
 
-FEATURE_COLUMNS = ["temperature", "humidity", "pressure", "gas_resistance", "co2"]
+FEATURE_COLUMNS = ["gas_resistance", "co2", "temperature", "humidity", "pressure"]
 RANDOM_STATE    = 42
 
 RIPENESS_MAP = {0: "unripe", 1: "near ripe", 2: "ripe", 3: "very ripe",
@@ -129,7 +129,7 @@ tflite_reg = to_tflite(reg_model, TFLITE_REG_PATH)
 
 # ── 6. Sanity check ──────────────────────────────────────────────────────────
 print("\nSanity check...")
-raw_sample = np.array([[31.5, 67.1, 1012.4, 453.63, 1020.0]])  # gas in kOhm (matches CSV)
+raw_sample = np.array([[453.63, 1020.0, 31.5, 67.1, 1012.4]])  # gas in kOhm (matches CSV)
 
 def run_tflite(model_bytes, inp):
     interp = tf.lite.Interpreter(model_content=model_bytes)
@@ -165,7 +165,7 @@ header = f"""\
 // Auto-generated - do not edit manually
 // Classifier : {len(tflite_cls)} bytes ({len(tflite_cls)/1024:.1f} KB)
 // Regressor  : {len(tflite_reg)} bytes ({len(tflite_reg)/1024:.1f} KB)
-// Input order: temperature, humidity, pressure, gas_resistance(kOhm), co2
+// Input order: gas_resistance(kOhm), co2, temperature, humidity, pressure
 //
 // Classifier uses SCALER_MEAN / SCALER_STD
 // Regressor  uses SCALER_MEAN / SCALER_STD (same scaler)

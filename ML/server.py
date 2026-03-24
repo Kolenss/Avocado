@@ -20,7 +20,7 @@ RIPENESS_MAP = artifact.get("ripeness_map", {
 })
 print("Model loaded.")
 
-FEATURE_COLUMNS = ["temperature", "humidity", "pressure", "gas_resistance", "co2"]
+FEATURE_COLUMNS = ["gas_resistance", "co2", "temperature", "humidity", "pressure"]
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -30,11 +30,11 @@ def predict():
 
     try:
         row = pd.DataFrame([{
+            "gas_resistance": float(data["gas_resistance"]),
+            "co2":            float(data["co2"]),
             "temperature":    float(data["temperature"]),
             "humidity":       float(data["humidity"]),
             "pressure":       float(data["pressure"]),
-            "gas_resistance": float(data["gas_resistance"]),
-            "co2":            float(data["co2"]),
         }])
     except (KeyError, ValueError) as e:
         return jsonify({"error": f"Invalid input: {e}"}), 400

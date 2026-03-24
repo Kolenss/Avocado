@@ -38,13 +38,13 @@ def predict_from_sensors(temp, humidity, pressure, gas_kohm, co2):
     Returns:
         dict with shelf_life_hours and shelf_life_days
     """
-    # Create input dataframe (RF expects these column names)
+    # Create input dataframe (RF expects these column names in this order)
     input_data = pd.DataFrame([{
+        "gas_resistance": gas_kohm,
+        "co2": co2,
         "temperature": temp,
         "humidity": humidity,
-        "pressure": pressure,
-        "gas_resistance": gas_kohm,
-        "co2": co2
+        "pressure": pressure
     }])
     
     # Predict shelf life

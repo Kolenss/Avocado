@@ -8,11 +8,11 @@ Target engineering:
 - remaining_hours = target_end_time - current_time (clipped at >= 0).
 
 Features used for prediction (5 inputs):
+- gas_resistance
+- co2
 - temperature
 - humidity
 - pressure
-- gas_resistance
-- co2
 """
 
 from __future__ import annotations
@@ -39,11 +39,11 @@ RANDOM_STATE = 42
 TEST_SIZE = 0.2
 
 FEATURE_COLUMNS = [
+    "gas_resistance",
+    "co2",
     "temperature",
     "humidity",
     "pressure",
-    "gas_resistance",
-    "co2",
 ]
 ID_COLUMN = "avocado_id"
 LABEL_COLUMN = "ripeness_label"
@@ -246,8 +246,8 @@ def main() -> None:
     reg_model, cls_model, _, _ = train()
 
     # Example inference input:
-    # [temperature, humidity, pressure, gas_resistance, co2]
-    demo = [29.6, 84.4, 1008.3, 258.7, 4279]
+    # [gas_resistance, co2, temperature, humidity, pressure]
+    demo = [258.7, 4279, 29.6, 84.4, 1008.3]
     pred_hours = predict_remaining_hours(reg_model, demo)
     pred_class, pred_label = predict_ripeness_label(cls_model, demo)
     print("\n=== Demo Prediction ===")

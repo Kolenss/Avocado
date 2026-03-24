@@ -33,19 +33,19 @@ def ask_float(name: str) -> float:
 
 def run() -> None:
     print("Avocado Ripeness & Shelf-Life Predictor (5 inputs)")
-    print("Input order: temperature, humidity, pressure, gas_resistance, co2\n")
+    print("Input order: gas_resistance, co2, temperature, humidity, pressure\n")
 
     artifact = joblib.load(MODEL_PATH)
     reg_model = artifact["reg_model"]
     cls_model = artifact["cls_model"]
 
+    gas_resistance = ask_float("gas_resistance")
+    co2 = ask_float("co2")
     temperature = ask_float("temperature")
     humidity = ask_float("humidity")
     pressure = ask_float("pressure")
-    gas_resistance = ask_float("gas_resistance")
-    co2 = ask_float("co2")
 
-    sample = [temperature, humidity, pressure, gas_resistance, co2]
+    sample = [gas_resistance, co2, temperature, humidity, pressure]
     remaining_hours = predict_remaining_hours(reg_model, sample)
     pred_class, pred_label = predict_ripeness_label(cls_model, sample)
     remaining_days = remaining_hours / 24

@@ -38,11 +38,11 @@ VALIDATION_SPLIT = 0.2
 
 # Features and target as requested
 FEATURE_COLUMNS = [
+    "gas_resistance",
+    "co2",
     "temperature",
     "humidity",
     "pressure",
-    "gas_resistance",
-    "co2",
 ]
 TARGET_COLUMN = "ripeness_label"
 
@@ -278,7 +278,7 @@ def predict_ripeness(
     Predict ripeness for one sample.
 
     input_row order:
-    [temperature, humidity, pressure, gas_resistance, co2]
+    [gas_resistance, co2, temperature, humidity, pressure]
     """
     if len(input_row) != len(FEATURE_COLUMNS):
         raise ValueError(f"input_row must have exactly {len(FEATURE_COLUMNS)} values.")
@@ -352,8 +352,8 @@ def main() -> None:
     loaded_model = load_model(MODEL_SAVE_PATH)
 
     # 7) Prediction example with 5 values
-    # [temperature, humidity, pressure, gas_resistance, co2]
-    new_sample = [27.4, 85.3, 1009.5, 391.0, 5000.0]
+    # [gas_resistance, co2, temperature, humidity, pressure]
+    new_sample = [391.0, 5000.0, 27.4, 85.3, 1009.5]
     pred_class, pred_label, shelf_life_days, pred_probs = predict_ripeness(
         loaded_model, scaler, new_sample
     )

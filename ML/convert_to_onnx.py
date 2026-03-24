@@ -22,7 +22,7 @@ artifact = joblib.load(MODEL_PATH)
 reg_model = artifact["reg_model"]
 cls_model = artifact["cls_model"]
 
-# 5 input features: temperature, humidity, pressure, gas_resistance, co2
+# 5 input features: gas_resistance, co2, temperature, humidity, pressure
 initial_type = [("float_input", FloatTensorType([None, 5]))]
 
 print("Converting regression model...")
@@ -39,7 +39,7 @@ print("Saved: shelf_life_cls.onnx")
 
 # Quick sanity check
 import onnxruntime as rt
-sample = np.array([[29.6, 84.4, 1008.3, 258.7, 4279]], dtype=np.float32)
+sample = np.array([[258.7, 4279, 29.6, 84.4, 1008.3]], dtype=np.float32)
 
 reg_sess = rt.InferenceSession("shelf_life_reg.onnx")
 reg_out = reg_sess.run(None, {"float_input": sample})

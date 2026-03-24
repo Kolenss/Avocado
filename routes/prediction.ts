@@ -84,12 +84,13 @@ export async function fetchPrediction(
 ): Promise<PredictionResult> {
   loadModels();
 
+  // Feature order: gas_resistance, co2, temperature, humidity, pressure
   const features = [
+    parseFloat(gasResistance),
+    parseFloat(co2),
     parseFloat(temperature),
     parseFloat(humidity),
     parseFloat(pressure),
-    parseFloat(gasResistance),
-    parseFloat(co2),
   ];
 
   const ripeness_class = predictCls(features);
