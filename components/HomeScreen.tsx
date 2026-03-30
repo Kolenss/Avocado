@@ -25,7 +25,9 @@ export default function Home(){
   async function runPrediction() {
     if (!temperature || !humidity || !pressure || !gasResistance || !co2) return;
     setPredicting(true);
+    
     try {
+      // Run prediction on current sensor values
       const result = await fetchPrediction(temperature, humidity, pressure, gasResistance, co2);
       setLocalPrediction(result);
     } catch (e) {
@@ -47,7 +49,7 @@ export default function Home(){
             <View className='flex items-center justify-between'>
               <ReadingCard title='Temperature' logo={ TempLogo } progressNum={ temperature ? Number(temperature) / 100 : 0 } setTab={ setTab }/>
               <ReadingCard title='Humidity' logo={ HumidityLogo } progressNum={ humidity ? Number(humidity) / 100 : 0 } setTab={ setTab }/>
-              <ReadingCard title='Pressure' logo={ GasLogo } progressNum={ pressure ? Number(pressure) / 1200 : 0 } setTab={ setTab }/>
+              <ReadingCard title='Pressure' logo={ GasLogo } progressNum={ pressure ? Number(pressure) / 100 : 0 } setTab={ setTab }/>
               <ReadingCard title='Gas' logo={ GasLogo } progressNum={ gasResistance ? Number(gasResistance) / 100 : 0 } setTab={ setTab }/>
               <ReadingCard title='Carbon Dioxide' logo={ CarbonLogo } progressNum={ co2 ? Number(co2) / 100 : 0 } setTab={ setTab }/>
             </View>

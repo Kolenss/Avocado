@@ -33,7 +33,7 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 
 
-CSV_PATH = r"C:\Users\Hans\Downloads\data-set-avocado-cleanbago.csv"
+CSV_PATH = r"newfeed-data-set-avocado-open-only-clean.csv"
 MODEL_PATH = "shelf_life_regressor.joblib"
 RANDOM_STATE = 42
 TEST_SIZE = 0.2

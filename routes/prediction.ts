@@ -1,5 +1,6 @@
 // Pure JS Random Forest inference — exact same results as predict_cli.py
 // No native modules, no network, fully offline.
+// Model version: 2026-03-30-20:05
 
 const RIPENESS_MAP: Record<number, string> = {
   0: 'Unripe',
@@ -38,11 +39,18 @@ let clsClasses: number[] | null = null;
 function loadModels() {
   if (!regTrees) {
     regTrees = require('../assets/reg_trees_compact.json') as RegNode[][];
+    console.log('[ML] Loaded regression trees:', regTrees.length, 'trees');
+    console.log('[ML] First reg tree has', regTrees[0].length, 'nodes');
+    console.log('[ML] First reg tree root:', JSON.stringify(regTrees[0][0]));
   }
   if (!clsTrees) {
     const clsData = require('../assets/cls_trees_compact.json') as { t: ClsNode[][]; c: number[] };
     clsTrees = clsData.t;
     clsClasses = clsData.c;
+    console.log('[ML] Loaded classification trees:', clsTrees.length, 'trees');
+    console.log('[ML] Classes:', clsClasses);
+    console.log('[ML] First cls tree has', clsTrees[0].length, 'nodes');
+    console.log('[ML] First cls tree root:', JSON.stringify(clsTrees[0][0]));
   }
 }
 
@@ -93,11 +101,17 @@ export async function fetchPrediction(
     parseFloat(pressure),
   ];
 
+  console.log('[ML] Input features:', features);
+
   const ripeness_class = predictCls(features);
   const ripeness_label = RIPENESS_MAP[ripeness_class] ?? 'Unknown';
 
+  console.log('[ML] Classification result:', ripeness_class, ripeness_label);
+
   // Clamp shelf life based on ripeness: overripe/molds/rotten = 0 remaining
   const rawHours = predictReg(features);
+  console.log('[ML] Raw regression hours:', rawHours);
+  
   const shelf_life_hours = ripeness_class >= 4 ? 0 : Math.max(0, rawHours);
   const shelf_life_days = shelf_life_hours / 24;
 
