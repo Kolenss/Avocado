@@ -57,7 +57,7 @@ function loadModels() {
 function predictReg(features: number[]): number {
   let sum = 0;
   for (const tree of regTrees!) {
-    let node = 0;
+    let node = tree.length - 1; // root is the last node (post-order traversal)
     while (tree[node].length === 4) {
       const [feat, thr, left, right] = tree[node] as [number, number, number, number];
       node = features[feat] <= thr ? left : right;
@@ -70,7 +70,7 @@ function predictReg(features: number[]): number {
 function predictCls(features: number[]): number {
   const votes: Record<number, number> = {};
   for (const tree of clsTrees!) {
-    let node = 0;
+    let node = tree.length - 1; // root is the last node (post-order traversal)
     while (tree[node].length === 4) {
       const [feat, thr, left, right] = tree[node] as [number, number, number, number];
       node = features[feat] <= thr ? left : right;
@@ -78,9 +78,11 @@ function predictCls(features: number[]): number {
     const cls = (tree[node] as [number])[0];
     votes[cls] = (votes[cls] ?? 0) + 1;
   }
-  // Return class with most votes, mapped through clsClasses
-  const winnerIdx = Number(Object.entries(votes).sort((a, b) => b[1] - a[1])[0][0]);
-  return clsClasses![winnerIdx] ?? winnerIdx;
+  // Return class with most votes
+  console.log('[ML] Votes:', JSON.stringify(votes));
+  const winnerClass = Number(Object.entries(votes).sort((a, b) => b[1] - a[1])[0][0]);
+  console.log('[ML] Winner class:', winnerClass);
+  return winnerClass;
 }
 
 export async function fetchPrediction(

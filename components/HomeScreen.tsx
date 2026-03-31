@@ -12,6 +12,7 @@ import TempLogo from '../assets/Temp_Logo.png'
 import CarbonLogo from '../assets/Carbon_Logo.png'
 import HumidityLogo from '../assets/Humidity_Logo.png'
 import GasLogo from '../assets/Gas_Logo.png'
+import TestPrediction from "./test";
 
 export default function Home(){
 
@@ -68,6 +69,8 @@ export default function Home(){
               <Text className='border px-[40px] p-[8px] rounded-[10px] bg-white text-newDarkText border-darkgreentext text-[13px]'>{ message }</Text>
             </View>
             </Pressable>
+
+            <TestPrediction></TestPrediction>
           </View>
         </View>
       </ScrollView>

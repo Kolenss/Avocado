@@ -14,13 +14,16 @@ artifact = joblib.load(MODEL_PATH)
 reg_model = artifact["reg_model"]
 cls_model = artifact["cls_model"]
 
-def export_tree(tree):
+def export_tree(tree, is_classifier=False):
     """Convert sklearn tree to compact JSON format."""
     nodes = []
     
     def traverse(node_id):
         if tree.feature[node_id] == -2:  # Leaf node
-            value = tree.value[node_id].flatten()[0]
+            if is_classifier:
+                value = float(np.argmax(tree.value[node_id].flatten()))
+            else:
+                value = tree.value[node_id].flatten()[0]
             nodes.append([float(value)])
             return len(nodes) - 1
         
@@ -42,7 +45,7 @@ def export_tree(tree):
 print("\nExporting regression trees...")
 reg_trees = []
 for estimator in reg_model.estimators_:
-    tree_data = export_tree(estimator.tree_)
+    tree_data = export_tree(estimator.tree_, is_classifier=False)
     reg_trees.append(tree_data)
 
 with open("reg_trees_compact.json", "w") as f:
@@ -52,7 +55,7 @@ print(f"  Saved: reg_trees_compact.json ({len(reg_trees)} trees)")
 print("\nExporting classification trees...")
 cls_trees = []
 for estimator in cls_model.estimators_:
-    tree_data = export_tree(estimator.tree_)
+    tree_data = export_tree(estimator.tree_, is_classifier=True)
     cls_trees.append(tree_data)
 
 # Classification model needs class mapping
