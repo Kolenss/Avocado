@@ -10,9 +10,13 @@
       "tsconfigPaths": true
     },
     "plugins": [
+<<<<<<< HEAD
       "expo-router",
       "expo-asset",
       "expo-font"
+=======
+      "expo-router"
+>>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
     ],
     "orientation": "portrait",
     "icon": "./cropped.png",

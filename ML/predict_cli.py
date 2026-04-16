@@ -46,11 +46,16 @@ def run() -> None:
     pressure = ask_float("pressure")
 
     sample = [gas_resistance, co2, temperature, humidity, pressure]
+<<<<<<< HEAD
     raw_hours = predict_remaining_hours(reg_model, sample)
     pred_class, pred_label = predict_ripeness_label(cls_model, sample)
     
     # Clamp shelf life based on ripeness: overripe/molds/rotten = 0 remaining
     remaining_hours = 0 if pred_class >= 4 else raw_hours
+=======
+    remaining_hours = predict_remaining_hours(reg_model, sample)
+    pred_class, pred_label = predict_ripeness_label(cls_model, sample)
+>>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
     remaining_days = remaining_hours / 24
 
     print("\n=== Prediction Result ===")

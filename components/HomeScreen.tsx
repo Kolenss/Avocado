@@ -4,6 +4,10 @@ import TriviaBoard from "./TriviaBoard"
 import ReadingCard from 'components/ReadingCard'
 
 import CardModal from "./CardModal";
+<<<<<<< HEAD
+=======
+import { BlurView } from "expo-blur";
+>>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
 import { useBluetooth } from "routes/bluetoothScan";
 import { useState } from "react";
 import { fetchPrediction } from "routes/prediction";
@@ -74,7 +78,11 @@ export default function Home(){
         
       {modal && 
         <Modal transparent={ true } className='items-center' animationType='fade'>
+<<<<<<< HEAD
           <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
+=======
+          <BlurView intensity={ 50 } tint='dark' className='flex-1'>
+>>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
             <View className=' p-[5px] gap-[5px] flex-1 justify-center'>
               <View className='py-[20px] px-[15px] rounded-[20px] bg-newBackground mx-[10px]'>
                 <View className=' p-[5px] items-center mb-[10px]'>
@@ -132,52 +140,96 @@ export default function Home(){
                 </Pressable>
               </View>
             </View>
+<<<<<<< HEAD
           </View>
+=======
+          </BlurView>
+>>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
         </Modal>
       }
       {tab == `Gas` && 
       <Modal transparent={true} animationType='fade'>
+<<<<<<< HEAD
         <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
           <View className='flex-1 justify-center items-center'>
             <CardModal logo={ GasLogo } Title={`Gas`} sensorModel={`BME680`} currentReading={`${gasResistance ? Number(gasResistance).toFixed(1) : '0.0'} KΩ`} setTab={ setTab }/>
           </View>
         </View>
+=======
+        <BlurView className='flex-1' intensity={ 60 } tint='dark'>
+          <View className='flex-1 justify-center items-center'>
+            <CardModal logo={ GasLogo } Title={`Gas`} sensorModel={`BME680`} currentReading={`${gasResistance ? Number(gasResistance).toFixed(1) : '0.0'} KΩ`} setTab={ setTab }/>
+          </View>
+        </BlurView>
+>>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
       </Modal>
       }
       {tab == `Humidity` && 
       <Modal transparent={true} animationType='fade'>
+<<<<<<< HEAD
         <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
           <View className='flex-1 justify-center items-center'>
             <CardModal logo={ HumidityLogo } Title={`Humidity`} sensorModel={`SHT31`} currentReading={`${humidity ? Number(humidity).toFixed(1) : '0.0'} %`} setTab={ setTab }/>
           </View>
         </View>
+=======
+        <BlurView className='flex-1' intensity={ 60 } tint='dark'>
+          <View className='flex-1 justify-center items-center'>
+            <CardModal logo={ HumidityLogo } Title={`Humidity`} sensorModel={`SHT31`} currentReading={`${humidity ? Number(humidity).toFixed(1) : '0.0'} %`} setTab={ setTab }/>
+          </View>
+        </BlurView>
+>>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
       </Modal>
       }
       {tab == `Temperature` && 
       <Modal transparent={true} animationType='fade'>
+<<<<<<< HEAD
         <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
           <View className='flex-1 justify-center items-center'>
             <CardModal logo={ TempLogo } Title={`Temperature`} sensorModel={`SHT31`} currentReading={`${temperature ? Number(temperature).toFixed(1) : '0.0'} °C`} setTab={ setTab }/>
           </View>
         </View>
+=======
+        <BlurView className='flex-1' intensity={ 60 } tint='dark'>
+          <View className='flex-1 justify-center items-center'>
+            <CardModal logo={ TempLogo } Title={`Temperature`} sensorModel={`SHT31`} currentReading={`${temperature ? Number(temperature).toFixed(1) : '0.0'} °C`} setTab={ setTab }/>
+          </View>
+        </BlurView>
+>>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
       </Modal>
       }
       {tab == `Pressure` && 
       <Modal transparent={true} animationType='fade'>
+<<<<<<< HEAD
         <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
           <View className='flex-1 justify-center items-center'>
             <CardModal logo={ GasLogo } Title={`Pressure`} sensorModel={`BME680`} currentReading={`${pressure ? Number(pressure).toFixed(1) : '0.0'} hPa`} setTab={ setTab }/>
           </View>
         </View>
+=======
+        <BlurView className='flex-1' intensity={ 60 } tint='dark'>
+          <View className='flex-1 justify-center items-center'>
+            <CardModal logo={ GasLogo } Title={`Pressure`} sensorModel={`BME680`} currentReading={`${pressure ? Number(pressure).toFixed(1) : '0.0'} hPa`} setTab={ setTab }/>
+          </View>
+        </BlurView>
+>>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
       </Modal>
       }
       {tab == `Carbon Dioxide` && 
       <Modal transparent={true} animationType='fade'>
+<<<<<<< HEAD
         <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.7)' }}>
           <View className='flex-1 justify-center items-center'>
             <CardModal logo={ CarbonLogo } Title={`Carbon Dioxide`} sensorModel={`MH-Z14A`} currentReading={`${co2 || '0'} ppm`} setTab={ setTab }/>
           </View>
         </View>
+=======
+        <BlurView className='flex-1' intensity={ 60 } tint='dark'>
+          <View className='flex-1 justify-center items-center'>
+            <CardModal logo={ CarbonLogo } Title={`Carbon Dioxide`} sensorModel={`MH-Z14A`} currentReading={`${co2 || '0'} ppm`} setTab={ setTab }/>
+          </View>
+        </BlurView>
+>>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
       </Modal>
     }
   </>)
