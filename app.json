@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Avocado",
+    "slug": "Avocado",
+    "version": "1.0.0",
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "experiments": {
+      "tsconfigPaths": true
+    },
+    "plugins": [
+      "expo-router",
+      "expo-asset",
+      "expo-font"
+    ],
+    "orientation": "portrait",
+    "icon": "./cropped.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.collins.avocado",
+      "adaptiveIcon": {
+        "foregroundImage": "./cropped.png",
+        "backgroundColor": "#ffffff"
+      }
+    }
+  }
+}

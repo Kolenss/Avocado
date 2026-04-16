@@ -1,0 +1,10 @@
+const { getDefaultConfig } = require('expo/metro-config');
+const { withNativeWind } = require('nativewind/metro');
+
+const config = getDefaultConfig(__dirname);
+
+// Allow .tflite and .onnx files to be bundled as assets
+config.resolver.assetExts.push('tflite');
+config.resolver.assetExts.push('onnx');
+
+module.exports = withNativeWind(config, { input: './global.css' });

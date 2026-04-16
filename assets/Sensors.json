@@ -1,0 +1,16 @@
+{
+    "BME680": {
+        "VOC Index": 135,
+        "Temperature" : 28.7,
+        "Humidity" : 63.2,
+        "Air Pressure" : 1009.2
+
+    },
+    "SHT31": {
+        "Temperature" : 28.7,
+        "Humidity" : 63.2
+    },
+    "NDIR CO₂": {
+        "Carbon Dioxide" : 742
+    }
+}
