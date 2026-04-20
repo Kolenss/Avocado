@@ -3,7 +3,7 @@ import { RadioButton } from "react-native-paper";
 import { useChecked } from "./CheckedContext";
 
 
-type SensorType = 'Gas' | 'Humidity' | 'Temperature' | 'Pressure' | 'CarbonDioxide'
+type SensorType = 'Gas' | 'Humidity' | 'Temperature' | 'CarbonDioxide'
   
 
 export default function SettingsCard( {sensorType, className} : { sensorType: SensorType; className?: string; } ){

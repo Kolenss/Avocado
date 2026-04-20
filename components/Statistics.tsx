@@ -1,125 +1,89 @@
 import { ScrollView, View, Text } from "react-native";
+import Statschart from "./Graph";
 import CustomText from "./CustomLabel";
 import { useChecked } from "./CheckedContext";
 import { useBluetooth } from "routes/bluetoothScan";
-import { useStatistics } from "./StatisticsContext";
+import { useEffect, useState } from "react";
 
-interface DataPoint {
-  value: number;
-  timestamp: Date;
-}
+
 
 export default function StatisticScreen(){
 
   const {
+    message,
+    scanning,
     temperature,
     humidity,
     pressure,
     gasResistance,
+    startScan
   } = useBluetooth();
 
   const { checked } = useChecked();
-<<<<<<< HEAD
-  const { tempData, humData, gasData, pressureData, co2Data } = useStatistics();
-=======
-  const { tempData, humData, gasData, pressureData } = useStatistics();
->>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
+  const [ tempData, setTempData ] = useState<Array<{ value: number }>>([])
+  const [ humData, setHumData] = useState<Array<{ value: number }>>([])
+  const [ gasData, setGasData] = useState<Array<{ value: number }>>([])
+  const [ pressureData, setPressureData] = useState<Array<{ value: number }>>([])
 
-  const getDataForSensor = (sensor: string) => {
-    switch(sensor) {
-      case "Temperature": return tempData;
-      case "Humidity": return humData;
-      case "Gas": return gasData;
-      case "Pressure": return pressureData;
-<<<<<<< HEAD
-      case "CarbonDioxide": return co2Data;
-=======
-      case "CarbonDioxide": return pressureData;
->>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
-      default: return [];
+  useEffect(() => {
+    if(temperature){
+      setTempData(prev => {
+        const updated = [...prev, {value: parseFloat(temperature)}]
+      if(updated.length > 20) updated.shift()
+      return updated
+      })
     }
-  }
+  }, [temperature]);
 
-  const calculateChange = (data: DataPoint[], index: number) => {
-    if (index === 0) return null;
-    const current = data[index].value;
-    const previous = data[index - 1].value;
-    const change = current - previous;
-    const percentChange = previous !== 0 ? (change / previous) * 100 : 0;
-    return { change, percentChange };
-  }
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false 
-    });
-  }
+  useEffect(() => {
+    if(humidity){
+      setHumData(prev => {
+        const updated = [...prev, {value: parseFloat(humidity)}]
+      if(updated.length > 20) updated.shift()
+      return updated
+      })
+    }
+  }, [humidity]);
   
+  useEffect(() => {
+    if(pressure){
+      setPressureData(prev => {
+        const updated = [...prev, {value: parseFloat(pressure)}]
+      if(updated.length > 20) updated.shift()
+      return updated
+      })
+    }
+  }, [pressure]);
+
+  
+  useEffect(() => {
+    if(gasResistance){
+      setGasData(prev => {
+        const updated = [...prev, {value: parseFloat(gasResistance)}]
+      if(updated.length > 20) updated.shift()
+      return updated
+      })
+    }
+  }, [gasResistance]);
+
+  console.log(tempData)
+  console.log(humData)
+  console.log(gasData)
+  console.log(pressureData)
+  
+    // const data=[ {value: 22 }, {value: 22 }, {value: 22 }, {value:  22 }, {value:  22 }, {value: 22 }, {value:   22 } , {value:  22 } , {value:  22 } , {value:   22 }  ]
+    // const data2=[ {value:400}, {value:250}, {value:350}, {value:320}, {value: 280}, {value: 190}, {value: 480} , {value: 40} , {value: 555} , {value: 300}  ]
+    
       return(
       <>
         <ScrollView>
-          {!temperature && !humidity && !pressure && !gasResistance ? (
-            <View className="flex-1 items-center justify-center p-[40px]">
-              <Text className="text-[18px] text-center text-gray-600 mb-[10px]">
-                📡 No Device Connected
-              </Text>
-              <Text className="text-[14px] text-center text-gray-500">
-                Please connect to ESP32 first to view sensor statistics
-              </Text>
+          {Object.entries(checked).map(([sensor, value]) => (
+            value && <View key={ sensor }>
+              <CustomText label={`${ sensor }`}></CustomText>
+              {/* <Statschart data={data2} ></Statschart> */}
+              <Statschart data={sensor == "Temperature" ? tempData : sensor == "Humidity" ? humData : sensor == "Gas" ? gasData : sensor == "CarbonDioxide" ? pressureData : [] } className=""/>
             </View>
-          ) : (
-            Object.entries(checked).map(([sensor, value]) => {
-              const data = getDataForSensor(sensor);
-              return value && <View key={ sensor } className="mb-[20px]">
-                <CustomText label={`${ sensor }`}></CustomText>
-                
-                {/* Time-series data table */}
-                <View className="bg-white mx-[10px] rounded-[10px] p-[10px] mt-[10px]">
-                  <Text className="text-[14px] font-bold text-darkgreentext mb-[8px]">Reading History</Text>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={true}>
-                    <View>
-                      {/* Table Header */}
-                      <View className="flex-row border-b border-gray-300 pb-[5px] mb-[5px]">
-                        <Text className="w-[60px] text-[11px] font-semibold text-gray-700">#</Text>
-                        <Text className="w-[90px] text-[11px] font-semibold text-gray-700">Time</Text>
-                        <Text className="w-[80px] text-[11px] font-semibold text-gray-700">Value</Text>
-                        <Text className="w-[80px] text-[11px] font-semibold text-gray-700">Change</Text>
-                        <Text className="w-[70px] text-[11px] font-semibold text-gray-700">%</Text>
-                      </View>
-                      
-                      {/* Table Rows */}
-                      {data.map((point, index) => {
-                        const changeData = calculateChange(data, index);
-                        const isIncrease = changeData && changeData.change > 0;
-                        const isDecrease = changeData && changeData.change < 0;
-                        
-                        return (
-                          <View key={index} className="flex-row py-[6px] border-b border-gray-100">
-                            <Text className="w-[60px] text-[11px] text-gray-600">{index + 1}</Text>
-                            <Text className="w-[90px] text-[11px] text-gray-800">{formatTime(point.timestamp)}</Text>
-                            <Text className="w-[80px] text-[12px] font-semibold text-darkgreentext">{point.value.toFixed(2)}</Text>
-                            <Text className={`w-[80px] text-[11px] font-semibold ${isIncrease ? 'text-green-600' : isDecrease ? 'text-red-600' : 'text-gray-500'}`}>
-                              {changeData ? `${isIncrease ? '▲' : isDecrease ? '▼' : '—'} ${Math.abs(changeData.change).toFixed(2)}` : '—'}
-                            </Text>
-                            <Text className={`w-[70px] text-[11px] font-semibold ${isIncrease ? 'text-green-600' : isDecrease ? 'text-red-600' : 'text-gray-500'}`}>
-                              {changeData ? `${changeData.percentChange > 0 ? '+' : ''}${changeData.percentChange.toFixed(1)}%` : '—'}
-                            </Text>
-                          </View>
-                        );
-                      })}
-                    </View>
-                  </ScrollView>
-                  
-                  {data.length === 0 && (
-                    <Text className="text-[12px] text-gray-500 text-center py-[10px]">No data available yet</Text>
-                  )}
-                </View>
-              </View>
-            })
-          )}
+          ))}
         </ScrollView>
       </>
       );
