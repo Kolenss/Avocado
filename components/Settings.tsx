@@ -9,7 +9,6 @@ export default function SettingsScreen(){
                 <SettingsCard sensorType="Gas"/>
                 <SettingsCard sensorType="Humidity"/>
                 <SettingsCard sensorType="Temperature"/>
-                <SettingsCard sensorType="Pressure"/>
                 <SettingsCard sensorType="CarbonDioxide"/>
                 <Text></Text>
             </View>

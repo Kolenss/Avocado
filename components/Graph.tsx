@@ -9,21 +9,22 @@ interface StatsChartProps {
 
 export default function Statschart({ className, data, data2 }: StatsChartProps) {
   const screenWidth = Dimensions.get("window").width;
-  const chartPadding = 40;
-  
-  // Always fit 20 data points across the screen
-  const maxDataPoints = 20;
-  const spacing = (screenWidth - chartPadding * 2) / (maxDataPoints - 1);
+  const chartPadding = 20; // padding inside the chart container
+
+  const spacing =
+    data && data.length > 1
+      ? Math.max(8, (screenWidth - chartPadding * 2) / (data.length - 1))
+      : 10;
 
   const maxVal =
     data && data.length > 0
-      ? Math.max(...data.map(d => d.value)) * 1.1
+      ? Math.max(...data.map(d => d.value)) * 1.05 // small headroom
       : 100;
 
   return (
     <View
       className=''
-      style={{ backgroundColor: "white", paddingVertical: 20, width: screenWidth }}
+      style={{ backgroundColor: "white", paddingVertical: 20 }}
     >
       <LineChart
         thickness={2}
@@ -39,7 +40,7 @@ export default function Statschart({ className, data, data2 }: StatsChartProps) 
         startOpacity={0.4}
         endOpacity={0.4}
         spacing={spacing}     
-        initialSpacing={chartPadding / 2}
+        initialSpacing={10}
         backgroundColor="white"
         rulesColor="gray"
         rulesType="solid"
@@ -51,7 +52,7 @@ export default function Statschart({ className, data, data2 }: StatsChartProps) 
         data2={data2}
         dataPointsColor2="green"
         isAnimated
-        animationDuration={500}
+        animationDuration={750}
         focusEnabled
         showValuesAsDataPointsText
         showTextOnFocus

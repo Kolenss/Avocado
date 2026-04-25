@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 
-type SensorType = "Gas" | "Humidity" | "Temperature" | "Pressure" | "CarbonDioxide";
+type SensorType = "Gas" | "Humidity" | "Temperature" | "CarbonDioxide";
 
 type CheckedContextType = {
   checked: Record<SensorType, boolean>;
@@ -15,7 +15,6 @@ export const CheckedProvider = ({ children }: { children: React.ReactNode }) => 
     Gas: true,
     Humidity: true,
     Temperature: true,
-    Pressure: true,
     CarbonDioxide: true,
   });
 
