@@ -117,13 +117,13 @@ export async function fetchPrediction(
 
   let note: string;
   if (shelf_life_days <= 0) {
-    note = 'Consume immediately or discard.';
+    note = 'Already overripe. Sell immediately or use for smoothies/cooking.';
   } else if (shelf_life_days < 1) {
-    note = `Will last about ${Math.round(shelf_life_hours)} more hours.`;
+    note = `Will become overripe in about ${Math.round(shelf_life_hours)} hours. Sell soon!`;
   } else if (shelf_life_days < 2) {
-    note = 'Will be at peak ripeness within 1 day.';
+    note = 'Will become overripe within 1 day. Good time to sell.';
   } else {
-    note = `Estimated ${shelf_life_days.toFixed(1)} days of shelf life remaining.`;
+    note = `Estimated ${shelf_life_days.toFixed(1)} days until overripe (still sellable).`;
   }
 
   return {

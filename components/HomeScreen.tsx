@@ -88,10 +88,10 @@ export default function Home(){
                         Freshness Status: <Text className='font-bold text-darkgreentext'>{localPrediction.ripeness_label}</Text>
                       </Text>
                       <Text className='text-darkgreentext text-[15px]'>
-                        Shelf Life: <Text className='font-bold text-darkgreentext'>
+                        Time Until Overripe: <Text className='font-bold text-darkgreentext'>
                           {localPrediction.shelf_life_days > 0
                             ? `${localPrediction.shelf_life_days.toFixed(1)} days (${localPrediction.shelf_life_hours.toFixed(0)} hrs)`
-                            : '0 days'}
+                            : 'Overripe or past'}
                         </Text>
                       </Text>
                     </View>
