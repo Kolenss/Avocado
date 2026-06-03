@@ -19,11 +19,7 @@ export default function StatisticScreen(){
   } = useBluetooth();
 
   const { checked } = useChecked();
-<<<<<<< HEAD
   const { tempData, humData, gasData, pressureData, co2Data } = useStatistics();
-=======
-  const { tempData, humData, gasData, pressureData } = useStatistics();
->>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
 
   const getDataForSensor = (sensor: string) => {
     switch(sensor) {
@@ -31,11 +27,7 @@ export default function StatisticScreen(){
       case "Humidity": return humData;
       case "Gas": return gasData;
       case "Pressure": return pressureData;
-<<<<<<< HEAD
       case "CarbonDioxide": return co2Data;
-=======
-      case "CarbonDioxide": return pressureData;
->>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
       default: return [];
     }
   }

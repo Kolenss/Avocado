@@ -11,29 +11,19 @@ interface StatisticsContextType {
   humData: DataPoint[];
   gasData: DataPoint[];
   pressureData: DataPoint[];
-<<<<<<< HEAD
   co2Data: DataPoint[];
-=======
->>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
 }
 
 const StatisticsContext = createContext<StatisticsContextType | null>(null);
 
 export const StatisticsProvider = ({ children }: { children: React.ReactNode }) => {
-<<<<<<< HEAD
   const { temperature, humidity, pressure, gasResistance, co2 } = useBluetooth();
-=======
-  const { temperature, humidity, pressure, gasResistance } = useBluetooth();
->>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
   
   const [tempData, setTempData] = useState<DataPoint[]>([]);
   const [humData, setHumData] = useState<DataPoint[]>([]);
   const [gasData, setGasData] = useState<DataPoint[]>([]);
   const [pressureData, setPressureData] = useState<DataPoint[]>([]);
-<<<<<<< HEAD
   const [co2Data, setCo2Data] = useState<DataPoint[]>([]);
-=======
->>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
 
   useEffect(() => {
     if (temperature) {
@@ -79,7 +69,6 @@ export const StatisticsProvider = ({ children }: { children: React.ReactNode }) 
     }
   }, [gasResistance]);
 
-<<<<<<< HEAD
   useEffect(() => {
     if (co2) {
       setCo2Data(prev => {
@@ -93,10 +82,6 @@ export const StatisticsProvider = ({ children }: { children: React.ReactNode }) 
 
   return (
     <StatisticsContext.Provider value={{ tempData, humData, gasData, pressureData, co2Data }}>
-=======
-  return (
-    <StatisticsContext.Provider value={{ tempData, humData, gasData, pressureData }}>
->>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
       {children}
     </StatisticsContext.Provider>
   );

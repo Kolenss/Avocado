@@ -14,7 +14,6 @@ import pandas as pd
 import serial
 import time
 
-<<<<<<< HEAD
 # Load the full RandomForest models
 print("Loading RandomForest models...")
 artifact = joblib.load("shelf_life_regressor.joblib")
@@ -22,13 +21,6 @@ rf_model = artifact["reg_model"]
 cls_model = artifact["cls_model"]
 print(f"  Regression model loaded: {type(rf_model).__name__}")
 print(f"  Classification model loaded: {type(cls_model).__name__}")
-=======
-# Load the full RandomForest model
-print("Loading RandomForest model...")
-artifact = joblib.load("shelf_life_regressor.joblib")
-rf_model = artifact["reg_model"]
-print(f"  Model loaded: {type(rf_model).__name__}")
->>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
 
 # Ripeness labels
 RIPENESS_MAP = {0: "unripe", 1: "near ripe", 2: "ripe", 3: "very ripe",
@@ -46,11 +38,7 @@ def predict_from_sensors(temp, humidity, pressure, gas_kohm, co2):
         co2: CO2 concentration in ppm
     
     Returns:
-<<<<<<< HEAD
         dict with shelf_life_hours, shelf_life_days, ripeness_class, and ripeness_label
-=======
-        dict with shelf_life_hours and shelf_life_days
->>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
     """
     # Create input dataframe (RF expects these column names in this order)
     input_data = pd.DataFrame([{
@@ -61,7 +49,6 @@ def predict_from_sensors(temp, humidity, pressure, gas_kohm, co2):
         "pressure": pressure
     }])
     
-<<<<<<< HEAD
     # Predict ripeness class
     ripeness_class = int(cls_model.predict(input_data)[0])
     ripeness_label = RIPENESS_MAP.get(ripeness_class, "unknown")
@@ -71,21 +58,13 @@ def predict_from_sensors(temp, humidity, pressure, gas_kohm, co2):
     
     # Clamp shelf life based on ripeness: overripe/molds/rotten = 0 remaining
     shelf_life_hours = 0 if ripeness_class >= 4 else max(0, raw_shelf_life_hours)
-=======
-    # Predict shelf life
-    shelf_life_hours = float(rf_model.predict(input_data)[0])
->>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
     shelf_life_days = shelf_life_hours / 24.0
     
     return {
         "shelf_life_hours": shelf_life_hours,
-<<<<<<< HEAD
         "shelf_life_days": shelf_life_days,
         "ripeness_class": ripeness_class,
         "ripeness_label": ripeness_label
-=======
-        "shelf_life_days": shelf_life_days
->>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
     }
 
 def read_from_serial(port, baudrate=115200):
@@ -122,10 +101,7 @@ def read_from_serial(port, baudrate=115200):
                     print("─" * 50)
                     print(f"Temp: {temp:.1f}°C | Humidity: {humidity:.1f}% | Pressure: {pressure:.1f} hPa")
                     print(f"Gas: {gas_kohm:.2f} kOhm | CO2: {co2} ppm")
-<<<<<<< HEAD
                     print(f"Ripeness: {result['ripeness_label']} (class {result['ripeness_class']})")
-=======
->>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
                     print(f"Shelf Life: {result['shelf_life_hours']:.1f} hours ({result['shelf_life_days']:.2f} days)")
                     print()
                     
@@ -165,10 +141,7 @@ def predict_from_json(json_str):
     print(f"  Gas: {gas_kohm:.2f} kOhm")
     print(f"  CO2: {co2} ppm")
     print("\nPrediction:")
-<<<<<<< HEAD
     print(f"  Ripeness: {result['ripeness_label']} (class {result['ripeness_class']})")
-=======
->>>>>>> 288643606676c2e7143f21b9052331a9949e8ff3
     print(f"  Shelf Life: {result['shelf_life_hours']:.1f} hours")
     print(f"  Shelf Life: {result['shelf_life_days']:.2f} days")
     print("─" * 50 + "\n")
